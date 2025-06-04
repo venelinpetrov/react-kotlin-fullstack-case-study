@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface TodoRepository : CrudRepository<Todo, Long> {
     fun findByCompleted(competed: Boolean): List<Todo>
+
     @Query("SELECT * FROM todos ORDER BY created_at DESC")
     override fun findAll(): List<Todo>
 }
