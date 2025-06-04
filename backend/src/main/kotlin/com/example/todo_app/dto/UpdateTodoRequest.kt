@@ -1,4 +1,4 @@
-package com.example.todo_app
+package com.example.todo_app.dto
 
 data class UpdateTodoRequest(
     val title: String,

@@ -1,7 +1,14 @@
-package com.example.todo_app
+package com.example.todo_app.controller
 
+import com.example.todo_app.dto.CreateTodoRequest
+import com.example.todo_app.dto.PartialUpdateTodoRequest
+import com.example.todo_app.model.Todo
+import com.example.todo_app.service.TodoService
+import com.example.todo_app.dto.UpdateTodoRequest
+import com.example.todo_app.mapper.toEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -17,8 +24,8 @@ class TodoController(private val todoService: TodoService) {
     fun getAllTodos() = ResponseEntity.ok(todoService.getAllTodos())
 
     @PostMapping
-    fun createTodo(@RequestBody todo: Todo): ResponseEntity<Todo> {
-        val createdTodo = todoService.createTodo(todo)
+    fun createTodo(@RequestBody req: CreateTodoRequest): ResponseEntity<Todo> {
+        val createdTodo = todoService.createTodo(req.toEntity())
         return ResponseEntity.created(URI("/${createdTodo.id}")).body(createdTodo)
     }
 
@@ -28,13 +35,28 @@ class TodoController(private val todoService: TodoService) {
     }
 
     @PutMapping("/{id}")
-    fun updateTodo(@PathVariable id: Long, @RequestBody todo: UpdateTodoRequest): ResponseEntity<Todo> {
+    fun updateTodo(@PathVariable id: Long, @RequestBody req: UpdateTodoRequest): ResponseEntity<Todo> {
         val existing = todoService.findTodoById(id) ?: return ResponseEntity.notFound().build()
 
         val updated = existing.copy(
-            title = todo.title,
-            description = todo.description,
-            completed = todo.completed
+            title = req.title,
+            description = req.description,
+            completed = req.completed
+        )
+
+        val saved = todoService.updateTodo(updated)
+
+        return ResponseEntity.ok(saved)
+    }
+
+    @PatchMapping("/{id}")
+    fun patchTodo(@PathVariable id: Long, @RequestBody req: PartialUpdateTodoRequest): ResponseEntity<Todo> {
+        val existing = todoService.findTodoById(id) ?: return ResponseEntity.notFound().build()
+
+        val updated = existing.copy(
+            title = req.title ?: existing.title,
+            description = req.description ?: existing.description,
+            completed = req.completed ?: existing.completed
         )
 
         val saved = todoService.updateTodo(updated)

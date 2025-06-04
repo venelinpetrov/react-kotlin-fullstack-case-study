@@ -1,5 +1,7 @@
-package com.example.todo_app
+package com.example.todo_app.service
 
+import com.example.todo_app.model.Todo
+import com.example.todo_app.repository.TodoRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
