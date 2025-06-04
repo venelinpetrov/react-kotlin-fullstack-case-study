@@ -1,0 +1,57 @@
+# Kotlin / Java / Spring Boot
+*.class
+*.jar
+*.war
+*.ear
+
+# Kotlin compiler artifacts
+*.kotlin_module
+.kotlinc/
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Logs
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# VS Code
+.vscode/
+
+# Spring Boot DevTools
+.spring-boot-devtools.properties
+.spring-boot-devtools/
+
+# Env files
+.env
+.env.*
+
+# Database (optional)
+*.h2.db
+*.mv.db
+
+# Test reports
+test-output/
+test-results/
+surefire-reports/
+
+# Code coverage
+coverage/
+jacoco*.exec
+build/reports/jacoco/
+
+# Swagger
+generated-sources/
+
+# Sonar
+.sonar/
+
+# Local config
+application-local.yml
+application-local.properties
