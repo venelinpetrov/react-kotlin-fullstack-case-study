@@ -24,8 +24,3 @@ fun Todo.toResponse(): TodoResponse {
         updatedAt = this.updatedAt
     )
 }
-
-fun <T> T.toSuccessResponse(): ApiResponse<T> = ApiResponse.success(this)
-
-fun <T> T.toSuccessResponseEntity(): ResponseEntity<ApiResponse<T>> =
-    ResponseEntity.ok(ApiResponse.success(this))
