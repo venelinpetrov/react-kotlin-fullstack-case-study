@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
+import java.time.format.DateTimeParseException
 
 @ControllerAdvice
 class GlobalExceptionHandler {
@@ -33,6 +34,13 @@ class GlobalExceptionHandler {
     fun handleNotFound(ex: NotFoundException, request: WebRequest): ResponseEntity<ApiResponse<Nothing>> {
         val response = ApiResponse.failure<Nothing>(ex.message ?: "Resource not found")
         return ResponseEntity(response, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(DateTimeParseException::class)
+    fun handleDateTimeParseException(ex: DateTimeParseException): ResponseEntity<ApiResponse<Nothing>> {
+        return ResponseEntity
+            .badRequest()
+            .body(ApiResponse.failure("Invalid date format: ${ex.parsedString ?: "unknown"}"))
     }
 
     @ExceptionHandler(Exception::class)

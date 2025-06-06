@@ -15,6 +15,7 @@ import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/todos")
@@ -38,7 +39,10 @@ class TodoController(private val todoService: TodoService) {
     }
 
     @PutMapping("/{id}")
-    fun updateTodo(@PathVariable id: Long, @Valid @RequestBody req: UpdateTodoRequest): ResponseEntity<ApiResponse<TodoResponse>> {
+    fun updateTodo(
+        @PathVariable id: Long,
+        @Valid @RequestBody req: UpdateTodoRequest
+    ): ResponseEntity<ApiResponse<TodoResponse>> {
         val existing = todoService.findTodoById(id) ?: throw NotFoundException("Todo with id $id not found")
 
         val updated = existing.copy(
@@ -53,7 +57,10 @@ class TodoController(private val todoService: TodoService) {
     }
 
     @PatchMapping("/{id}")
-    fun patchTodo(@PathVariable id: Long, @Valid @RequestBody req: PartialUpdateTodoRequest): ResponseEntity<ApiResponse<TodoResponse>> {
+    fun patchTodo(
+        @PathVariable id: Long,
+        @Valid @RequestBody req: PartialUpdateTodoRequest
+    ): ResponseEntity<ApiResponse<TodoResponse>> {
         val existing = todoService.findTodoById(id) ?: throw NotFoundException("Todo with id $id not found")
 
         val updated = existing.copy(
@@ -65,5 +72,13 @@ class TodoController(private val todoService: TodoService) {
         val saved = todoService.updateTodo(updated).toResponse()
 
         return saved.toSuccessResponseEntity()
+    }
+
+    @GetMapping("/before")
+    fun getTodosBeforeDate(@RequestParam date: String): ResponseEntity<ApiResponse<List<TodoResponse>>> {
+        val parsedDate = LocalDateTime.parse(date)
+        val todos = todoService.findTodoBeforeDate(parsedDate).map { it.toResponse() }
+
+        return todos.toSuccessResponseEntity()
     }
 }
