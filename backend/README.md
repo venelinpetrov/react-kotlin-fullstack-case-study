@@ -6,7 +6,7 @@
 
 # Spring Boot / Kotlin Todo app API
 
-This document explains in details how the Todo app API was made
+This document explains in detail how the Todo app API was made
 
 ## Spring Boot
 
@@ -99,6 +99,34 @@ src/main/kotlin/com/example/todo_app/
 
 ### 🛠️ Configuration
 
+#### MySQL connection
+
+First, we need to configure Spring Boot to connect to our MySQL database by specifying the `url`, `username`, `password`, and the driver class name in the application.properties file:
+
+```bash
+# application.properties
+
+spring.datasource.url=jdbc:mysql://localhost:3306/todo_app?useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=0000
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+```
+
+Next, here is the schema for our todos table:
+
+```sql
+-- schema.sql
+
+CREATE TABLE IF NOT EXISTS todos (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255),
+  description VARCHAR(255),
+  completed BOOLEAN DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
 #### Auditing
 
 The `@EnableJdbcAuditing`annotation is part of Spring Data JDBC, and it's used to enable auditing features in your application. Auditing is the process of automatically capturing and populating metadata such as:
@@ -143,7 +171,9 @@ data class Todo(
 )
 ```
 
-## Theory
+## 📚 Theory
+
+There are some common and best practices outlined in this section.
 
 ### DTO vs Model (a.k.a Entity)
 
