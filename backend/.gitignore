@@ -3,6 +3,7 @@
 *.jar
 *.war
 *.ear
+bin/
 
 # Kotlin compiler artifacts
 *.kotlin_module
