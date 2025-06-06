@@ -1,12 +1,57 @@
-# Notes
+<p align="center">
+  <img src="https://spring.io/img/projects/spring-boot.svg" alt="Spring Boot" height="80"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" alt="Kotlin" width="80"/>
+</p>
 
-Some notes while developing the Todo app
+# Spring Boot / Kotlin Todo app API
 
-## Spring
+This document explains in details how the Todo app API was made
 
-In this section you will find everything related to Spring setup
+## Spring Boot
 
-### Project structure
+In this section you will find everything related to the Spring Boot setup
+
+### 📦 Dependencies
+
+```kotlin
+// build.gradle.kts
+
+dependencies {
+	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("com.mysql:mysql-connector-j")
+	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
+}
+```
+
+**Explanation**:
+
+| Dependency                                                                 | Purpose                                                                 |
+|---------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| `org.springframework.boot:spring-boot-starter-data-jdbc`                 | Enables Spring Data JDBC support for database interactions.             |
+| `org.springframework.boot:spring-boot-starter-web`                       | Provides web and RESTful API capabilities with Spring MVC.              |
+| `com.fasterxml.jackson.module:jackson-module-kotlin`                     | Adds support for Jackson JSON serialization/deserialization for Kotlin. |
+| `org.jetbrains.kotlin:kotlin-reflect`                                    | Enables Kotlin reflection, required by frameworks like Spring.          |
+| `com.mysql:mysql-connector-j`                                            | MySQL JDBC driver for connecting to a MySQL database.                   |
+| `org.jetbrains.kotlin:kotlin-stdlib-jdk8`                                | Kotlin standard library for JDK 8.                                       |
+| `org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8`               | Generates Swagger/OpenAPI docs for your REST API.                       |
+| `org.springframework.boot:spring-boot-starter-validation`               | Adds support for validation annotations like `@Valid`, `@NotNull`, etc. |
+| `org.springframework.boot:spring-boot-starter-test`                     | Testing support including JUnit, Hamcrest, and Mockito.                 |
+| `org.jetbrains.kotlin:kotlin-test-junit5`                                | Enables JUnit 5 support for Kotlin tests.                               |
+| `org.junit.platform:junit-platform-launcher`                             | Required for launching JUnit 5 tests.                                   |
+| `org.springframework.boot:spring-boot-devtools`                         | Provides hot reload and development-time enhancements.                  |
+
+
+### 📁 Project structure
 
 ```
 src/main/kotlin/com/example/todo_app/
@@ -39,7 +84,7 @@ src/main/kotlin/com/example/todo_app/
 **Explanation**:
 
 
-| Folder                  | Purpose |
+| 📁 Folder                 | 🔍 Purpose |
 |-------------------------|---------|
 | `common/`               | Contains general-purpose utilities and shared classes used across multiple layers. For example: `ApiResponse` and extensions for consistent API wrapping. |
 | `config/`               | Holds Spring configuration classes such as auditing, CORS, or other custom setup beans. |
@@ -52,10 +97,9 @@ src/main/kotlin/com/example/todo_app/
 | `service/`              | Business logic layer. Encapsulates data access, validation, and use-case logic. Called by controllers. |
 | `TodoAppApplication.kt` | The main Spring Boot entry point (`@SpringBootApplication`). Starts the application. |
 
-## Configuration
+### 🛠️ Configuration
 
-
-### Auditing
+#### Auditing
 
 The `@EnableJdbcAuditing`annotation is part of Spring Data JDBC, and it's used to enable auditing features in your application. Auditing is the process of automatically capturing and populating metadata such as:
 
