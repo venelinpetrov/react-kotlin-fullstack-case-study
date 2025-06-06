@@ -14,4 +14,6 @@ class TodoService(private val todoRepository: TodoRepository) {
     fun updateTodo(todo: Todo): Todo = todoRepository.save(todo)
     fun findTodoBeforeDate(date: LocalDateTime): List<Todo> =
         todoRepository.findByCreatedAtBefore(date).sortedByDescending { it.createdAt }
+    fun deleteTodoById(id: Long): Unit = todoRepository.deleteById(id)
+    fun deleteAllTodos(): Unit = todoRepository.deleteAll()
 }

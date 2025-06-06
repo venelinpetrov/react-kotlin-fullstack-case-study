@@ -81,4 +81,14 @@ class TodoController(private val todoService: TodoService) {
 
         return todos.toSuccessResponseEntity()
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteTodoById(@PathVariable id: Long) {
+        val existing = todoService.findTodoById(id) ?: throw NotFoundException("Todo with id $id not found")
+
+        todoService.deleteTodoById(id)
+    }
+
+    @DeleteMapping("/all")
+    fun deleteAllTodos() = todoService.deleteAllTodos()
 }

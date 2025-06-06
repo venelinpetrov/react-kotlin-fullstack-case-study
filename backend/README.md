@@ -8,7 +8,7 @@
 
 This document explains in detail how the Todo app API was made
 
-![alt text](image.png)
+![alt text](image-1.png)
 
 <h2><img src="https://spring.io/img/projects/spring-boot.svg" alt="Spring Boot" height="16"/> Spring Boot </h2>
 
