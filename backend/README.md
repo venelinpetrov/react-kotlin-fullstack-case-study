@@ -8,6 +8,8 @@
 
 This document explains in detail how the Todo app API was made
 
+![alt text](image.png)
+
 <h2><img src="https://spring.io/img/projects/spring-boot.svg" alt="Spring Boot" height="16"/> Spring Boot </h2>
 
 In this section you will find everything related to the Spring Boot setup
