@@ -8,7 +8,7 @@
 
 This document explains in detail how the Todo app API was made
 
-## Spring Boot
+<h2><img src="https://spring.io/img/projects/spring-boot.svg" alt="Spring Boot" height="16"/> Spring Boot </h2>
 
 In this section you will find everything related to the Spring Boot setup
 
@@ -171,9 +171,57 @@ data class Todo(
 )
 ```
 
+#### Debugging
+
+Some logging features that can come in handy while developing and debugging
+
+```bash
+# Debug
+
+logging.level.org.springframework.jdbc.core=DEBUG
+logging.level.org.springframework.jdbc.core.StatementCreatorUtils=TRACE
+
+logging.level.org.springframework.web=DEBUG
+logging.level.org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG
+```
+
+
+#### Exception handling
+
+Why use a `GlobalExceptionHandler` at all?
+
+The purpose of `@ControllerAdvice` with a `GlobalExceptionHandler` is to:
+
+- Provide user-friendly responses (instead of raw stack traces or HTML error pages). This way all responses look consistent, making frontend handling simpler
+- Return appropriate HTTP status codes (e.g., 400, 404, 422, etc.)
+- The global handler catches exceptions and returns structured `ApiResponse` with `success=false`
+- Avoid leaking sensitive info in error messages
+- Still log or inspect full stack traces as needed internally
+- You keep your controller code clean and focused on happy path logic
+
+Best practice:
+
+You should explicitly handle common client-side errors like `MethodArgumentNotValidException` (400 validation failure), `HttpMessageNotReadableException` (400 malformed JSON), `EntityNotFoundException` (404 Not found). For truly unexpected or internal errors (e.g. `NullPointerException`, `SQLException`), you should let them bubble up or catch with a generic fallback (but log them and return a 500).
+
+Note on `@ControllerAdvice`
+
+In a Spring Boot application, `@ControllerAdvice` is a powerful annotation that allows you to handle exceptions globally, rather than catching them in each individual controller. It acts as an interceptor of exceptions thrown by methods annotated with @RequestMapping (or its variants like @GetMapping, @PostMapping, etc).
+
+This helps you separate error-handling logic from your controller code and ensures consistent HTTP responses for errors.
+
 ## 📚 Theory
 
 There are some common and best practices outlined in this section.
+
+### How it all works together
+
+In a typical Spring Boot application, we use controllers, services, and repositories to structure the application according to the MVC (Model-View-Controller) and layered architecture principles. These components interact in the following manner:
+
+1. The `Controller` receives an HTTP request (e.g. `GET /api/todos`)
+2. It delegates to a `Service` method (e.g. `getAllTodos`)
+3. The `Service` fetches data using a `Repository` (e.g. `findAll`), applies business rules or transformations
+4. The result is returned back up the chain - from the service to the controller - which returns it in the HTTP response
+
 
 ### DTO vs Model (a.k.a Entity)
 
@@ -203,3 +251,115 @@ data class CreateTodoRequest(
     val description: String
 )
 ```
+
+<h2><img src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" alt="Kotlin" width="16"/> Kotlin</h2>
+
+This section highlights some key Kotlin idioms and patterns used throughout the codebase.
+
+#### Extension functions
+
+Kotlin extension functions allow us to add functionality to existing classes without modifying their source code. They're used heavily in this app for clean conversion between layers, such as DTO ↔ Entity mappings and response formatting.
+
+```kotlin
+fun CreateTodoRequest.toEntity(): Todo { ... }
+
+fun Todo.toResponse(): TodoResponse { ... }
+```
+
+#### Companion objects
+
+Companion objects in Kotlin are used to define static-like members within a class - such as constants or factory methods  -  without needing to instantiate the class.
+
+In this project, the `ApiResponse` class uses a companion object to define convenient factory methods for success and error responses:
+
+```kotlin
+data class ApiResponse<T>(
+    val success: Boolean,
+    val data: T? = null,
+    val error: String? = null
+) {
+    companion object {
+        fun <T> success(data: T): ApiResponse<T> =
+            ApiResponse(success = true, data = data)
+
+        fun <T> failure(message: String): ApiResponse<T> =
+            ApiResponse(success = false, data = null, error = message)
+    }
+}
+```
+
+#### Data classes
+
+Kotlin’s data class automatically provides `equals`, `hashCode`, `toString`, and `copy` methods - perfect for DTOs and immutable-like domain models.
+
+Used for modeling request and response payloads cleanly:
+
+```kotlin
+data class CreateTodoRequest(
+    val title: String,
+    val description: String
+)
+
+data class TodoResponse(
+    val id: Long,
+    val title: String,
+    val description: String,
+    val completed: Boolean,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime
+)
+```
+
+Also used elegantly in partial updates via `.copy()`:
+
+```kotlin
+val updated = existing.copy(
+    title = req.title ?: existing.title,
+    ...
+)
+```
+
+#### Null safety
+
+Kotlin enforces null safety at the language level, reducing the chance of runtime `NullPointerExceptions`.
+
+You can see this in how `findTodoById` safely returns a nullable value:
+
+```kotlin
+fun findTodoById(id: Long): Todo? = todoRepository.findByIdOrNull(id)
+```
+
+And then is explicitly checked in the controller:
+
+```kotlin
+val todo = todoService.findTodoById(id) ?: throw NotFoundException(...)
+```
+
+#### Lambda expressions
+
+Lambda expressions are used throughout, for example when transforming data or sorting:
+
+```kotlin
+val todos = todoRepository
+    .findByCreatedAtBefore(date)
+    .sortedByDescending { it.createdAt }
+```
+
+Also used in mapping lists:
+
+```kotlin
+todoService.getAllTodos().map { it.toResponse() }
+```
+
+#### Named arguments
+
+Kotlin allows for named arguments, which let you explicitly specify the name of each parameter when calling a function or constructor:
+
+```kotlin
+ApiResponse(success = false, data = null, error = message)
+
+// vs
+// ApiResponse(false, null, message)
+```
+
+This idiom improves readability by making it clear what each value represents, and it also allows you to pass arguments in any order. Named arguments are especially useful when dealing with functions or constructors that have many parameters, default values, or nullable types.
