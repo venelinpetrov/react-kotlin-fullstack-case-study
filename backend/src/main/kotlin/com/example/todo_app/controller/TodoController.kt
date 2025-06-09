@@ -29,7 +29,7 @@ class TodoController(private val todoService: TodoService) {
     @PostMapping
     fun createTodo(@Valid @RequestBody req: CreateTodoRequest): ResponseEntity<ApiResponse<TodoResponse>> {
         val createdTodo = todoService.createTodo(req.toEntity()).toResponse()
-        return ResponseEntity.created(URI("/api/todos${createdTodo.id}")).body(createdTodo.toSuccessResponse())
+        return ResponseEntity.created(URI("/api/todos/${createdTodo.id}")).body(createdTodo.toSuccessResponse())
     }
 
     @GetMapping("/{id}")
