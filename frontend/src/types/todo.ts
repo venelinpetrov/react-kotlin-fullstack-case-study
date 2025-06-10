@@ -12,3 +12,9 @@ export interface TodoResponse {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface TodoListItemResponse {
+	id: number;
+	title: string;
+	completed: boolean;
+}

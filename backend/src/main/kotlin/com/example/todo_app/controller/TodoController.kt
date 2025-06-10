@@ -35,7 +35,7 @@ class TodoController(private val todoService: TodoService) {
     }
 
     @GetMapping("/{id}")
-    fun getTodoById(id: Long): ResponseEntity<ApiResponse<TodoResponse>> {
+    fun getTodoById(@PathVariable id: Long): ResponseEntity<ApiResponse<TodoResponse>> {
         val todo = todoService.findTodoById(id) ?: throw NotFoundException("Todo with id $id not found")
         return todo.toResponse().toSuccessResponseEntity()
     }
