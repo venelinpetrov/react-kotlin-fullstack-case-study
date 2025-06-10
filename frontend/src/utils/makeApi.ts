@@ -1,8 +1,9 @@
-import type { BaseQueryFn } from '@reduxjs/toolkit/query';
+import type { BaseQueryFn, QueryReturnValue } from '@reduxjs/toolkit/query';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import axios from 'axios';
 import type { AxiosRequestConfig, AxiosError } from 'axios';
 import { stringify } from 'qs';
+import type { ApiResponse } from '../types/todo';
 
 const instance = axios.create({
 	paramsSerializer: (params) => stringify(params, { arrayFormat: 'comma' }),
@@ -10,7 +11,7 @@ const instance = axios.create({
 
 export interface RequestError {
 	status: number;
-	error: string;
+	message: string;
 }
 
 const axiosBaseQuery = ({
@@ -25,12 +26,12 @@ const axiosBaseQuery = ({
 		params?: AxiosRequestConfig['params'];
 		config?: AxiosRequestConfig;
 	},
-	unknown,
+	ApiResponse<unknown>,
 	RequestError | undefined
 > => {
 	return async ({ url, method, data, params = {}, config = {} }) => {
 		try {
-			const result = await instance({
+			const result = await instance<ApiResponse<unknown>>({
 				url: baseUrl + url,
 				method,
 				data,
@@ -39,17 +40,25 @@ const axiosBaseQuery = ({
 			});
 			return {
 				data: result.data.data,
-				error: result.data.data.error,
-			};
+				error: undefined,
+			} as QueryReturnValue<
+				ApiResponse<unknown>,
+				RequestError | undefined,
+				object
+			>;
 		} catch (axiosError) {
 			const err = axiosError as AxiosError<{ error: string }>;
 			return {
 				data: undefined,
 				error: {
 					status: err.response?.status,
-					error: err.response?.data.error,
+					message: err.response?.data.error,
 				},
-			};
+			} as QueryReturnValue<
+				ApiResponse<unknown>,
+				RequestError | undefined,
+				object
+			>;
 		}
 	};
 };
