@@ -5,10 +5,12 @@ import com.example.todo_app.common.toSuccessResponse
 import com.example.todo_app.common.toSuccessResponseEntity
 import com.example.todo_app.dto.CreateTodoRequest
 import com.example.todo_app.dto.PartialUpdateTodoRequest
+import com.example.todo_app.dto.TodoListItemResponse
 import com.example.todo_app.dto.TodoResponse
 import com.example.todo_app.dto.UpdateTodoRequest
 import com.example.todo_app.exception.NotFoundException
 import com.example.todo_app.mapper.toEntity
+import com.example.todo_app.mapper.toListItemResponse
 import com.example.todo_app.mapper.toResponse
 import com.example.todo_app.service.TodoService
 import jakarta.validation.Valid
@@ -21,8 +23,8 @@ import java.time.LocalDateTime
 @RequestMapping("/api/todos")
 class TodoController(private val todoService: TodoService) {
     @GetMapping
-    fun getAllTodos(): ResponseEntity<ApiResponse<List<TodoResponse>>> {
-        val todos = todoService.getAllTodos().map { it.toResponse() }
+    fun getAllTodos(): ResponseEntity<ApiResponse<List<TodoListItemResponse>>> {
+        val todos = todoService.getAllTodos().map { it.toListItemResponse() }
         return todos.toSuccessResponseEntity()
     }
 
