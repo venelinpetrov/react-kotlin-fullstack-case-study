@@ -1,54 +1,61 @@
-# React + TypeScript + Vite
+# React / TS / Redux toolkit (a.k.a RTK) / React Router Todo front-end app
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This document explains in detail how the Todo app front end was structured
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+In this section we will describe the project setup and dependencies
 
-## Expanding the ESLint configuration
+### ESLint and Prettier
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Before diving into development, it's important to set up ESLint and Prettier. This setup will provide long-term benefits by enforcing consistency and preventing common mistakes.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- ESLint helps catch potential issues early, such as missing dependencies in `useEffect` through rules like exhaustive-deps and much more.
+
+- Prettier automatically formats your code whenever you save (e.g., using `Ctrl+S` in your IDE), making development smoother and more efficient.
+
+For this to work you need to install the following *dev dependencies:*
+
+```bash
+npm i -D @eslint/js @types/eslint__js @typescript-eslint/eslint-plugin@typescript-eslint/parser eslint eslint-config-prettier eslint-plugin-jsx-a11y eslint-plugin-prettier eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh prettier typescript-eslint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+For VS Code: make sure you have ESLint and Prettier plugins installed, as well as enabling these settings:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```json
+"editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+},
+"eslint.format.enable": true,
+"editor.formatOnPaste": true
 ```
+
+You also need a `.prettierrc` and a `eslint.config.js` files.
+
+
+### Redux toolkit (RTK)
+
+We’ll use Redux Toolkit (RTK) for data querying and caching. RTK is the modern, recommended approach to using Redux, offering a simplified and more efficient developer experience.
+
+**Note**: For such a simple app, you don't really need RTK, but this is a great opportunity to demonstrate its capabilities and highlight real-world use cases.
+
+Let's install the required dependencies
+
+```bash
+npm i @reduxjs/toolkit react-redux qs axios
+npm i --save-dev @types/qs
+```
+
+The first two are RTK related.
+
+[qs](https://www.npmjs.com/package/qs) is a querystring parsing and stringifying library. `@types/qs` provides TS bindings.
+
+[axios](https://github.com/axios/axios) is a feature-rich HTTP client that is commonly used with RTK.
+
+The setup requires 3 main parts
+
+1. `utils/makeApi.ts` This is where we configure `qs`, `axios`, as well as the success and error response objects
+
+2. `utils/store.ts` Basic store setup
+
+3. `store/todos/api.ts` Is the api endpoints definitions
