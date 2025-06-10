@@ -6,13 +6,13 @@ function App() {
 
 	return (
 		<div>
-			{isLoading ? (
+			{error ? (
+				<p>{error.message}</p>
+			) : isLoading ? (
 				<p>Loading...</p>
 			) : (
 				<ul>
-					{todos.map(({ title }) => (
-						<li key={title}>{title}</li>
-					))}
+					{todos?.map(({ title }) => <li key={title}>{title}</li>)}
 				</ul>
 			)}
 		</div>

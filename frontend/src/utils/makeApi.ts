@@ -68,7 +68,7 @@ export enum Tag {
 }
 
 export const myApi = createApi({
-	reducerPath: 'api', // TODO maybe add more specific name?
+	reducerPath: 'api',
 	baseQuery: axiosBaseQuery({
 		baseUrl: 'http://localhost:8080/api/', // TODO env var
 	}),
