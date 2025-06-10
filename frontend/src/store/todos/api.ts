@@ -8,14 +8,14 @@ export const todosApi = myApi.injectEndpoints({
 				url: 'todos',
 				method: 'GET',
 			}),
-			providesTags: [Tag.TODO],
+			providesTags: [{ type: Tag.TODO, id: 'LIST' }],
 		}),
 		fetchTodo: build.query<TodoResponse, number>({
 			query: (id) => ({
 				url: `todos/${id}`,
 				method: 'GET',
 			}),
-			providesTags: [Tag.TODO],
+			providesTags: (_res, _err, id) => [{ type: Tag.TODO, id }],
 		}),
 	}),
 });
