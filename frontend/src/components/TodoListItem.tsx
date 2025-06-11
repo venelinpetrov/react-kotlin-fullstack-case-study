@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import { usePatchTodoMutation } from '../store/todos/api';
 import { useNotification } from './Notification/Notification';
 import { NotificationSeverity } from '../store/notification/types';
+import { usePatchTodoMutation } from '../store/todos/api';
 
 interface TodoListItemProps {
 	id: number;

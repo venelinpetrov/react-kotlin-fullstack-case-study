@@ -1,13 +1,15 @@
 .notification {
+    box-sizing: border-box;
     position: fixed;
     top: 0;
-    padding: 16px;
-    width: 300px;
+    padding: 8px;
+    width: 400px;
     border: 1px solid green;
     color: green;
     left: 50%;
-    transform: translate(-50%, -100%);
+    transform: translate(-50%, -110%);
     transition: all 0.2s ease-out;
+    border-radius: 8px;
 }
 
 .notification.open {

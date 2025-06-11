@@ -1,7 +1,7 @@
 import '../App.css';
-import { useFetchAllTodosQuery } from '../store/todos/api';
-import { TodoListItem } from '../components';
 import { memo } from 'react';
+import { TodoListItem } from '../components';
+import { useFetchAllTodosQuery } from '../store/todos/api';
 
 const HomePage = () => {
 	const { data: todos, isLoading, error } = useFetchAllTodosQuery();

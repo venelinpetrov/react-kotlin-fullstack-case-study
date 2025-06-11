@@ -19,6 +19,12 @@ export interface TodoListItemResponse {
 	completed: boolean;
 }
 
+export interface UpdateTodoRequest {
+	title?: string;
+	description?: string;
+	completed?: boolean;
+}
+
 export interface PartialUpdateTodoRequest {
 	title?: string;
 	description?: string;

@@ -1,17 +1,19 @@
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './Notification.css';
 import { selectNotificationStatus } from '../../store/notification/selectors';
-import { useEffect, useMemo } from 'react';
-import { NotificationSeverity } from '../../store/notification/types';
 import {
 	hideNotification,
 	showNotification,
 } from '../../store/notification/slice';
+import { NotificationSeverity } from '../../store/notification/types';
 
-const NOTIFICATION_CLOSE_DELAY = 2000;
+const NOTIFICATION_CLOSE_DELAY = 4000;
 
 export const Notification = () => {
-	const { open, message, severity } = useSelector(selectNotificationStatus);
+	const { open, message, title, severity } = useSelector(
+		selectNotificationStatus
+	);
 
 	const dispatch = useDispatch();
 
@@ -44,7 +46,12 @@ export const Notification = () => {
 		return () => clearTimeout(id);
 	}, [dispatch, open]);
 
-	return <div className={className}>{message}</div>;
+	return (
+		<div className={className}>
+			<h4>{title}</h4>
+			<strong>{message}</strong>
+		</div>
+	);
 };
 
 export const useNotification = () => {

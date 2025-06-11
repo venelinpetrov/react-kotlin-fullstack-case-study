@@ -1,10 +1,11 @@
 import js from '@eslint/js'
+import { fixupPluginRules } from '@eslint/compat';
 import tseslint from 'typescript-eslint'
 import prettier from 'eslint-config-prettier'
 import prettierPlugin from 'eslint-plugin-prettier'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
-
+import importOrderPlugin from 'eslint-plugin-import';
 export default tseslint.config(
 	{
 		ignores: ['dist/**', 'node_modules/**', '*.d.ts']
@@ -18,6 +19,7 @@ export default tseslint.config(
 			prettier: prettierPlugin,
 			react,
 			'react-hooks': reactHooks,
+			import: fixupPluginRules(importOrderPlugin),
 		},
 		rules: {
 			'@typescript-eslint/no-unused-vars': 'error',
@@ -28,6 +30,17 @@ export default tseslint.config(
 			// React Hooks rules
 			'react-hooks/rules-of-hooks': 'error',
 			'react-hooks/exhaustive-deps': 'warn',
+			'import/order': [
+				1,
+				{
+					groups: ['external', 'builtin', 'internal', 'sibling', 'parent', 'index'],
+
+					alphabetize: {
+						order: 'asc',
+						caseInsensitive: true,
+					},
+				},
+			],
 		},
 		settings: {
 			react: {
