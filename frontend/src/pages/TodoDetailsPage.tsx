@@ -1,5 +1,6 @@
 import { useParams } from 'react-router';
 import { useFetchTodoQuery } from '../store/todos/api';
+import { memo } from 'react';
 
 const TodoDetailsPage = () => {
 	const { id } = useParams();
@@ -28,4 +29,4 @@ const TodoDetailsPage = () => {
 	);
 };
 
-export default TodoDetailsPage;
+export default memo(TodoDetailsPage);

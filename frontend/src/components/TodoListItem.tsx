@@ -1,6 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { usePatchTodoMutation } from '../store/todos/api';
+import { useNotification } from './Notification/Notification';
+import { NotificationSeverity } from '../store/notification/types';
 
 interface TodoListItemProps {
 	id: number;
@@ -12,6 +14,7 @@ const DELAY = 300; // ms
 export const TodoListItem = ({ id, title, completed }: TodoListItemProps) => {
 	const [patchTodo] = usePatchTodoMutation();
 	const [value, setValue] = useState(completed);
+	const { showNotification } = useNotification();
 	const sentRef = useRef(false);
 
 	// Optimistic update + debouncing
@@ -22,9 +25,15 @@ export const TodoListItem = ({ id, title, completed }: TodoListItemProps) => {
 			if (sentRef.current) {
 				return;
 			}
+
 			sentRef.current = true;
+
 			try {
 				await patchTodo({ id, data: { completed: value } });
+				showNotification({
+					message: 'Successfully updated todo',
+					severity: NotificationSeverity.Success,
+				});
 			} catch {
 				setValue(completed);
 			} finally {
@@ -33,7 +42,7 @@ export const TodoListItem = ({ id, title, completed }: TodoListItemProps) => {
 				}, DELAY);
 			}
 		},
-		[id, patchTodo, completed]
+		[patchTodo, id, showNotification, completed]
 	);
 
 	return (

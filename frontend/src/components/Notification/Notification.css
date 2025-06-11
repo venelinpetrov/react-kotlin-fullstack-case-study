@@ -1,0 +1,20 @@
+.notification {
+    position: fixed;
+    top: 0;
+    padding: 16px;
+    width: 300px;
+    border: 1px solid green;
+    color: green;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    transition: all 0.2s ease-out;
+}
+
+.notification.open {
+    transform: translate(-50%, 10%);
+}
+
+.notification.error {
+    border: 1px solid red;
+    color: red;
+}

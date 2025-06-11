@@ -1,6 +1,7 @@
 import '../App.css';
 import { useFetchAllTodosQuery } from '../store/todos/api';
 import { TodoListItem } from '../components';
+import { memo } from 'react';
 
 const HomePage = () => {
 	const { data: todos, isLoading, error } = useFetchAllTodosQuery();
@@ -28,4 +29,4 @@ const HomePage = () => {
 	);
 };
 
-export default HomePage;
+export default memo(HomePage);

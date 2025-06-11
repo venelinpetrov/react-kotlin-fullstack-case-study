@@ -1,6 +1,11 @@
 # React / TS / Redux toolkit (a.k.a RTK) / React Router Todo front-end app
 
-This document explains in detail how the Todo app front end was structured
+This document explains in detail how the Todo app front end was structured. This app support several features
+
+- CRUD operations on Todos
+- Optimisitc updates
+- Debouncing of requests
+- Notifications to show success or error statuses.
 
 ## Setup
 
@@ -52,10 +57,45 @@ The first two are RTK related.
 
 [axios](https://github.com/axios/axios) is a feature-rich HTTP client that is commonly used with RTK.
 
-The setup requires 3 main parts
+The setup requires 5 pieces
 
-1. `utils/makeApi.ts` This is where we configure `qs`, `axios`, as well as the success and error response objects
+1. `utils/makeApi.ts` This is where we configure `qs`, `axios`, as well as the success and error response objects, which together define the fetching mechanism for this app
 
-2. `utils/store.ts` Basic store setup
+2. `utils/store.ts` Basic store setup. Here we include the slice reducers and middleware (if any)
 
 3. `store/todos/api.ts` Is the api endpoints definitions
+
+4. `store/notification/slice.ts` Is where we define the reducers for the notification state. This file exports the action creators and the notification reducer.
+
+5. `store/notification/selectors.ts` This file exports one selector for the notification state.
+
+## UI
+
+TODO: Add directory tree
+
+This section explains how the UI is built.
+
+### Routing
+
+For this app we use React Router 7. The setup is fairly simple
+
+```jsx
+<BrowserRouter>
+	<Routes>
+		<Route path="/" element={<HomePage />} />
+		<Route path="/todos/:id" element={<TodoDetailsPage />} />
+	</Routes>
+</BrowserRouter>
+```
+
+### Components
+
+Components live in the `src/components` directory and are exported from an `index.ts` for easy import afterwards.
+
+### Pages
+
+Pages live in the `src/pages` directory and are `default` exported so we can use them in the router. It's also a good practice to memoize them, for better performance in larger apps. In this case it doesn't matter.
+
+### Types
+
+Types can be defined at various levels, but our preferred approach is to define them as close as possible to where they are used. If a type needs to be elevated to a higher scope, we do so only when there’s a clear need. This helps us avoid unnecessarily polluting the global or shared type space.
