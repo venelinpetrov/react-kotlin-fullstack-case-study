@@ -1,6 +1,6 @@
-import { Link } from 'react-router';
 import '../App.css';
 import { useFetchAllTodosQuery } from '../store/todos/api';
+import { TodoListItem } from '../components';
 
 const HomePage = () => {
 	const { data: todos, isLoading, error } = useFetchAllTodosQuery();
@@ -13,9 +13,13 @@ const HomePage = () => {
 				<p>Loading...</p>
 			) : (
 				<ul>
-					{todos?.map(({ id, title }) => (
+					{todos?.map(({ id, title, completed }) => (
 						<li key={id}>
-							<Link to={`/todos/${id}`}>{title}</Link>
+							<TodoListItem
+								id={id}
+								title={title}
+								completed={completed}
+							/>
 						</li>
 					))}
 				</ul>

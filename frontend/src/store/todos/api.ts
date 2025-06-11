@@ -1,4 +1,8 @@
-import type { TodoListItemResponse, TodoResponse } from '../../types/todo';
+import type {
+	PartialUpdateTodoRequest,
+	TodoListItemResponse,
+	TodoResponse,
+} from '../../types/todo';
 import { myApi, Tag } from '../../utils/makeApi';
 
 export const todosApi = myApi.injectEndpoints({
@@ -17,7 +21,25 @@ export const todosApi = myApi.injectEndpoints({
 			}),
 			providesTags: (_res, _err, id) => [{ type: Tag.TODO, id }],
 		}),
+		patchTodo: build.mutation<
+			TodoResponse,
+			{ id: number; data: PartialUpdateTodoRequest }
+		>({
+			query: ({ id, data }) => ({
+				url: `todos/${id}`,
+				method: 'PATCH',
+				data,
+			}),
+			invalidatesTags: (_res, _err, { id }) => [
+				{ type: Tag.TODO, id: 'LIST' },
+				{ type: Tag.TODO, id },
+			],
+		}),
 	}),
 });
 
-export const { useFetchAllTodosQuery, useFetchTodoQuery } = todosApi;
+export const {
+	useFetchAllTodosQuery,
+	useFetchTodoQuery,
+	usePatchTodoMutation,
+} = todosApi;

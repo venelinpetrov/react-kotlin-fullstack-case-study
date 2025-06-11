@@ -30,6 +30,6 @@ fun Todo.toListItemResponse(): TodoListItemResponse {
     return TodoListItemResponse(
         id = this.id!!,
         title = this.title,
-        description = this.description
+        completed = this.completed
     )
 }
