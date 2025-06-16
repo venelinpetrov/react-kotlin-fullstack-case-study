@@ -1,4 +1,3 @@
-import '../App.css';
 import { memo } from 'react';
 import { AddTodoForm, TodoListItem } from '../components';
 import { useFetchAllTodosQuery } from '../store/todos/api';

@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './AddTodoForm.css';
 import { useCreateTodoMutation } from '../../store/todos/api';
 import type { CreateTodoRequest } from '../../types/todo';
@@ -23,17 +23,13 @@ export const AddTodoForm = () => {
 		},
 		enableReinitialize: true,
 		validationSchema: todoFormValidationSchema,
-		onSubmit: async (data) => {
-			await createTodo({ data });
+		onSubmit: (data) => {
 			setIsFormShown(false);
+			resetForm();
+			createTodo({ data });
 		},
 	});
 
-	useEffect(() => {
-		if (!isFormShown) {
-			resetForm();
-		}
-	}, [isFormShown, resetForm]);
 	return (
 		<form onSubmit={(e) => e.preventDefault()}>
 			<button onClick={() => setIsFormShown(true)}>Add new +</button>

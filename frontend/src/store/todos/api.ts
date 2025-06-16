@@ -32,10 +32,13 @@ export const todosApi = myApi.injectEndpoints({
 				method: 'PATCH',
 				data,
 			}),
-			invalidatesTags: (_res, _err, { id }) => [
-				{ type: Tag.TODO, id: 'LIST' },
-				{ type: Tag.TODO, id },
-			],
+			invalidatesTags: (_res, err, { id }) =>
+				err
+					? []
+					: [
+							{ type: Tag.TODO, id: 'LIST' },
+							{ type: Tag.TODO, id },
+						],
 		}),
 		putTodo: build.mutation<
 			TodoResponse,
@@ -46,10 +49,13 @@ export const todosApi = myApi.injectEndpoints({
 				method: 'PUT',
 				data,
 			}),
-			invalidatesTags: (_res, _err, { id }) => [
-				{ type: Tag.TODO, id: 'LIST' },
-				{ type: Tag.TODO, id },
-			],
+			invalidatesTags: (_res, err, { id }) =>
+				err
+					? []
+					: [
+							{ type: Tag.TODO, id: 'LIST' },
+							{ type: Tag.TODO, id },
+						],
 		}),
 		createTodo: build.mutation<TodoResponse, { data: CreateTodoRequest }>({
 			query: ({ data }) => ({
@@ -57,7 +63,54 @@ export const todosApi = myApi.injectEndpoints({
 				method: 'POST',
 				data,
 			}),
-			invalidatesTags: () => [{ type: Tag.TODO, id: 'LIST' }],
+			async onQueryStarted({ data }, { dispatch, queryFulfilled }) {
+				const patchResult = dispatch(
+					todosApi.util.updateQueryData(
+						'fetchAllTodos',
+						undefined,
+						(draft) => {
+							draft.unshift({
+								id: Date.now(),
+								completed: false,
+								...data,
+							});
+						}
+					)
+				);
+
+				try {
+					await queryFulfilled;
+				} catch {
+					patchResult.undo();
+				}
+			},
+			invalidatesTags: (_res, err) =>
+				err ? [] : [{ type: Tag.TODO, id: 'LIST' }],
+		}),
+		deleteTodo: build.mutation<TodoResponse, number>({
+			query: (id) => ({
+				url: `todos/${id}`,
+				method: 'DELETE',
+			}),
+			async onQueryStarted(id, { dispatch, queryFulfilled }) {
+				const patchResult = dispatch(
+					todosApi.util.updateQueryData(
+						'fetchAllTodos',
+						undefined,
+						(draft) => {
+							return draft.filter((todo) => todo.id != id);
+						}
+					)
+				);
+
+				try {
+					await queryFulfilled;
+				} catch {
+					patchResult.undo();
+				}
+			},
+			invalidatesTags: (_red, err) =>
+				err ? [] : [{ type: Tag.TODO, id: 'LIST' }],
 		}),
 	}),
 });
@@ -68,4 +121,5 @@ export const {
 	usePutTodoMutation,
 	usePatchTodoMutation,
 	useCreateTodoMutation,
+	useDeleteTodoMutation,
 } = todosApi;

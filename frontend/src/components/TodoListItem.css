@@ -1,0 +1,21 @@
+.todo-list-item {
+	display: flex;
+	padding: 8px;
+	align-items: center;
+	gap: 4px;
+	height: 40px;
+	border: 1px solid #333;
+	border-radius: 8px;
+	justify-content: space-between;
+}
+
+.todo-list-item button {
+	display: none;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+}
+
+.todo-list-item:hover button {
+	display: inline-block;
+}

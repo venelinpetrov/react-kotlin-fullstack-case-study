@@ -1,8 +1,12 @@
+import './TodoListItem.css';
 import { useCallback, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { useNotification } from './Notification/Notification';
 import { NotificationSeverity } from '../store/notification/types';
-import { usePatchTodoMutation } from '../store/todos/api';
+import {
+	useDeleteTodoMutation,
+	usePatchTodoMutation,
+} from '../store/todos/api';
 
 interface TodoListItemProps {
 	id: number;
@@ -13,46 +17,54 @@ const DELAY = 300; // ms
 
 export const TodoListItem = ({ id, title, completed }: TodoListItemProps) => {
 	const [patchTodo] = usePatchTodoMutation();
-	const [value, setValue] = useState(completed);
+	const [deleteTodo] = useDeleteTodoMutation();
 	const { showNotification } = useNotification();
-	const sentRef = useRef(false);
+	const [value, setValue] = useState(completed);
+	const debounceTimerRef = useRef<number | null>(null);
+
+	const handleDelete = useCallback(async () => {
+		await deleteTodo(id);
+		showNotification({ message: 'Todo successfully deleted' });
+	}, [deleteTodo, id, showNotification]);
 
 	// Optimistic update + debouncing
 	const handleChange = useCallback(
 		async (value: boolean) => {
 			setValue(value);
 
-			if (sentRef.current) {
-				return;
+			if (debounceTimerRef.current) {
+				clearTimeout(debounceTimerRef.current);
 			}
 
-			sentRef.current = true;
-
-			try {
-				await patchTodo({ id, data: { completed: value } });
-				showNotification({
-					message: 'Successfully updated todo',
-					severity: NotificationSeverity.Success,
-				});
-			} catch {
-				setValue(completed);
-			} finally {
-				setTimeout(() => {
-					sentRef.current = false;
-				}, DELAY);
-			}
+			debounceTimerRef.current = setTimeout(async () => {
+				try {
+					if (value == completed) {
+						return;
+					}
+					await patchTodo({ id, data: { completed: value } });
+					showNotification({
+						message: 'Successfully updated todo',
+						severity: NotificationSeverity.Success,
+					});
+				} catch {
+					setValue(completed);
+				}
+			}, DELAY);
 		},
 		[patchTodo, id, showNotification, completed]
 	);
 
 	return (
-		<div>
-			<Link to={`/todos/${id}`}>{title}</Link>
-			<input
-				type="checkbox"
-				checked={value}
-				onChange={(e) => handleChange(e.target.checked)}
-			/>
+		<div className="todo-list-item">
+			<div>
+				<Link to={`/todos/${id}`}>{title}</Link>
+				<input
+					type="checkbox"
+					checked={value}
+					onChange={(e) => handleChange(e.target.checked)}
+				/>
+			</div>
+			<button onClick={handleDelete}>-</button>
 		</div>
 	);
 };
