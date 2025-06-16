@@ -96,6 +96,26 @@ Components live in the `src/components` directory and are exported from an `inde
 
 Pages live in the `src/pages` directory and are `default` exported so we can use them in the router. It's also a good practice to memoize them, for better performance in larger apps. In this case it doesn't matter.
 
+### Notification Mechanism
+
+Notifications are a bit unique in how they're handled. They're implemented via the `<Notification />` component, which resides at the top level of the app. However, unlike most components, notification state needs to be updated from anywhere in the app, regardless of component hierarchy.
+
+To support this, we use createSlice to define a notification slice that exposes two actions: `showNotification` and `hideNotification`.
+
+For convenience, we've created a `useNotification` hook to simplify dispatching these actions. This hook abstracts away the need to manually import `useDispatch` and call it directly. Instead, it provides two utility functions that handle the dispatching for you.
+
+### Error Handling
+
+Error handling is implemented in two ways: local and global.
+
+1. Local Error Handling
+
+Errors are caught using `try-catch` blocks. When an error occurs, the useNotification hook is used to dispatch a notification with the appropriate payload.
+
+2. Global Error Handling
+
+This follows the same approach in terms of UI feedback, but is handled via middleware, on a global level.
+
 ### Types
 
 Types can be defined at various levels, but our preferred approach is to define them as close as possible to where they are used. If a type needs to be elevated to a higher scope, we do so only when there’s a clear need. This helps us avoid unnecessarily polluting the global or shared type space.
