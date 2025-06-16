@@ -114,8 +114,74 @@ Errors are caught using `try-catch` blocks. When an error occurs, the useNotific
 
 2. Global Error Handling
 
-This follows the same approach in terms of UI feedback, but is handled via middleware, on a global level.
 
+This follows the same approach in terms of UI feedback, but is handled via middleware, on a global level. See `errorHandlingMiddleware.ts`
+
+```ts
+export const errorHandlingMiddleware: Middleware =
+	({ dispatch }) =>
+	(next) =>
+	(action) => {
+		if (isRejectedWithValue(action)) {
+			dispatch(
+				notificationSlice.actions.showNotification({
+					severity: NotificationSeverity.Error,
+					title: 'An error occurred!',
+					message:
+						(action.payload as { message?: string }).message || '',
+				})
+			);
+		}
+
+		return next(action);
+	};
+
+```
+
+and then, in `/utils/store.ts`
+
+```ts
+middleware: (getDefaultMiddleware) =>
+	getDefaultMiddleware().concat(
+		myApi.middleware,
+		errorHandlingMiddleware // << Add the middleware
+	),
+```
+
+### Optimistic updates.
+
+For both creating and deleting items, we implement optimistic updates to improve perceived performance. This approach also simplifies state management by avoiding potential inconsistencies that can arise from manually syncing local and remote state.
+
+This happens in the API layer (see `store/todos/api.ts`):
+
+```ts
+deleteTodo: build.mutation<TodoResponse, number>({
+	query: (id) => ({
+		url: `todos/${id}`,
+		method: 'DELETE',
+	}),
+	async onQueryStarted(id, { dispatch, queryFulfilled }) {
+		const patchResult = dispatch(
+			todosApi.util.updateQueryData(
+				'fetchAllTodos',
+				undefined,
+				(draft) => {
+					return draft.filter((todo) => todo.id != id);
+				}
+			)
+		);
+
+		try {
+			await queryFulfilled;
+		} catch {
+			patchResult.undo();
+		}
+	},
+	invalidatesTags: (_red, err) =>
+		err ? [] : [{ type: Tag.TODO, id: 'LIST' }],
+}),
+```
+This technique enables direct manipulation of the cached state through optimistic updates. If the server request fails, the change is rolled back using `patchResult.undo()`, ensuring the UI remains consistent with the actual data.
 ### Types
 
 Types can be defined at various levels, but our preferred approach is to define them as close as possible to where they are used. If a type needs to be elevated to a higher scope, we do so only when there’s a clear need. This helps us avoid unnecessarily polluting the global or shared type space.
