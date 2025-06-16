@@ -48,7 +48,7 @@ export const Notification = () => {
 
 	return (
 		<div className={className}>
-			<h4>{title}</h4>
+			{title && <h4>{title}</h4>}
 			<strong>{message}</strong>
 		</div>
 	);

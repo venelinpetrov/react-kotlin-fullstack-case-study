@@ -3,7 +3,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import axios from 'axios';
 import type { AxiosRequestConfig, AxiosError } from 'axios';
 import { stringify } from 'qs';
-import type { ApiResponse } from '../types/todo';
+import type { ApiResponse } from '../../types/todo';
 
 const instance = axios.create({
 	paramsSerializer: (params) => stringify(params, { arrayFormat: 'comma' }),

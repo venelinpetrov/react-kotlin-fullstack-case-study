@@ -1,19 +1,12 @@
 import { useFormik } from 'formik';
 import { memo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import * as yup from 'yup';
 import { useNotification } from '../components';
 import { NotificationSeverity } from '../store/notification/types';
 import { useFetchTodoQuery, usePutTodoMutation } from '../store/todos/api';
 import type { UpdateTodoRequest } from '../types/todo';
+import { todoFormValidationSchema } from '../utils/schemas/TodoFormValidationSchema';
 
-const validationSchema = yup.object({
-	title: yup
-		.string()
-		.required('Title is required')
-		.min(3, 'Title should be at least 3 characters long')
-		.max(80, 'Title should be 80 characters at most'),
-});
 const TodoDetailsPage = () => {
 	const { id } = useParams();
 	const parsedId = parseInt(id!);
@@ -38,7 +31,7 @@ const TodoDetailsPage = () => {
 				completed: false,
 			},
 			enableReinitialize: true,
-			validationSchema,
+			validationSchema: todoFormValidationSchema,
 			onSubmit: async (values) => {
 				try {
 					await putTodo({ id: todo!.id, data: values }).unwrap();

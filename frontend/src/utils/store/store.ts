@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { errorHandlingMiddleware } from './errorHandlingMiddleware';
 import { myApi } from './makeApi';
-import { notificationSlice } from '../store/notification/slice';
+import { notificationSlice } from '../../store/notification/slice';
 
 export const store = configureStore({
 	reducer: {
@@ -8,5 +9,8 @@ export const store = configureStore({
 		[notificationSlice.reducerPath]: notificationSlice.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
-		getDefaultMiddleware().concat(myApi.middleware),
+		getDefaultMiddleware().concat(
+			myApi.middleware,
+			errorHandlingMiddleware
+		),
 });

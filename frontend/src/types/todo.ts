@@ -30,3 +30,8 @@ export interface PartialUpdateTodoRequest {
 	description?: string;
 	completed?: boolean;
 }
+
+export interface CreateTodoRequest {
+	title: string;
+	description: string;
+}
