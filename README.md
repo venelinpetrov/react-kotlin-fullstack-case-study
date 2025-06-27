@@ -1,4 +1,4 @@
-# Fullstack todo app with Kotlin Spring Boot and React
+# Fullstack app with Kotlin Spring Boot and React
 
 A scalable foundation for larger applications, with every component explained in detail below.
 
