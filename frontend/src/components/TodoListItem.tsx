@@ -27,7 +27,6 @@ export const TodoListItem = ({ id, title, completed }: TodoListItemProps) => {
 		showNotification({ message: 'Todo successfully deleted' });
 	}, [deleteTodo, id, showNotification]);
 
-	// Optimistic update + debouncing
 	const handleChange = useCallback(
 		async (value: boolean) => {
 			setValue(value);
